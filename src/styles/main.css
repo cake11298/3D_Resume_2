@@ -520,3 +520,231 @@ html, body {
     animation: scan-line 3s linear infinite;
     pointer-events: none;
 }
+
+/* --- INFO PANEL --- */
+.info-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    background: var(--ui-bg);
+    border: 2px solid var(--neon-pink);
+    border-radius: 10px;
+    padding: 2rem;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.info-panel.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.info-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: 2px solid var(--neon-pink);
+    color: var(--neon-pink);
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.info-close:hover {
+    background: var(--neon-pink);
+    color: var(--dark-bg);
+    transform: rotate(90deg);
+}
+
+.info-title {
+    font-size: 2rem;
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.info-content {
+    color: var(--neon-blue);
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+.info-content p {
+    margin-bottom: 1rem;
+}
+
+.info-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-content li {
+    padding: 0.5rem 0;
+    border-left: 3px solid var(--neon-blue);
+    padding-left: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* --- ACHIEVEMENT SYSTEM --- */
+.achievement-notification {
+    position: fixed;
+    top: -150px;
+    right: 2rem;
+    width: 350px;
+    background: var(--ui-bg);
+    border: 2px solid var(--electric-yellow);
+    border-radius: 10px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 2000;
+    transition: top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.achievement-notification.show {
+    top: 2rem;
+    animation: achievement-pulse 0.5s ease-in-out;
+}
+
+@keyframes achievement-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.achievement-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+    animation: achievement-spin 0.6s ease-in-out;
+}
+
+@keyframes achievement-spin {
+    from {
+        transform: rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: rotate(360deg) scale(1);
+        opacity: 1;
+    }
+}
+
+.achievement-content {
+    flex: 1;
+}
+
+.achievement-title {
+    color: var(--electric-yellow);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.3rem;
+}
+
+.achievement-name {
+    color: var(--neon-pink);
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    text-shadow: 0 0 5px var(--neon-pink);
+}
+
+.achievement-desc {
+    color: var(--neon-blue);
+    font-size: 0.85rem;
+}
+
+/* Achievement Progress Bar */
+#achievement-progress {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ui-bg);
+    border: 2px solid var(--electric-yellow);
+    border-radius: 20px;
+    padding: 0.8rem 1.5rem;
+    backdrop-filter: blur(10px);
+    min-width: 200px;
+    text-align: center;
+}
+
+#achievement-count {
+    color: var(--electric-yellow);
+    font-weight: bold;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.achievement-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--dark-gray);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.achievement-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-pink), var(--electric-yellow));
+    transition: width 0.5s ease-out;
+    box-shadow: 0 0 10px var(--electric-yellow);
+}
+
+/* --- RESPONSIVE UPDATES --- */
+@media (max-width: 768px) {
+    .info-panel {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .achievement-notification {
+        width: 90%;
+        right: 5%;
+    }
+
+    #achievement-progress {
+        bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .info-title {
+        font-size: 1.5rem;
+    }
+
+    .info-content {
+        font-size: 0.9rem;
+    }
+
+    .achievement-notification {
+        padding: 1rem;
+    }
+
+    .achievement-icon {
+        font-size: 2rem;
+    }
+}

@@ -109,6 +109,21 @@
             <h2 id="scene-title">Welcome</h2>
             <p id="scene-description">Loading your experience...</p>
         </div>
+
+        <!-- Info Panel for Interactive Objects -->
+        <div id="info-panel" class="info-panel">
+            <button class="info-close" onclick="document.getElementById('info-panel').classList.remove('show')">✕</button>
+            <h3 class="info-title"></h3>
+            <div class="info-content"></div>
+        </div>
+
+        <!-- Achievement Progress -->
+        <div id="achievement-progress">
+            <span id="achievement-count">0/12</span>
+            <div class="achievement-bar">
+                <div class="achievement-bar-fill" style="width: 0%"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Performance Monitor (Dev Mode) -->

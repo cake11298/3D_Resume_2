@@ -5,6 +5,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import SceneManager from './SceneManager';
 import InputController from './InputController';
 import AudioManager from './AudioManager';
+import PostProcessingManager from './PostProcessingManager';
+import InteractionManager from './InteractionManager';
+import AchievementSystem from './AchievementSystem';
 
 export default class Application {
     constructor(options = {}) {
@@ -21,6 +24,9 @@ export default class Application {
         this.sceneManager = null;
         this.inputController = null;
         this.audioManager = null;
+        this.postProcessing = null;
+        this.interactionManager = null;
+        this.achievementSystem = null;
 
         // Animation
         this.clock = new THREE.Clock();
@@ -59,6 +65,9 @@ export default class Application {
         this.sceneManager = new SceneManager(this);
         this.inputController = new InputController(this);
         this.audioManager = new AudioManager(this);
+        this.postProcessing = new PostProcessingManager(this);
+        this.interactionManager = new InteractionManager(this);
+        this.achievementSystem = new AchievementSystem(this);
 
         // Setup UI
         this.setupUI();
@@ -244,6 +253,11 @@ export default class Application {
 
         // Update renderer
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Update post-processing
+        if (this.postProcessing) {
+            this.postProcessing.onResize();
+        }
     }
 
     start() {
@@ -283,8 +297,22 @@ export default class Application {
             this.inputController.update(this.deltaTime);
         }
 
-        // Render scene
-        this.renderer.render(this.scene, this.camera);
+        // Update post-processing
+        if (this.postProcessing) {
+            this.postProcessing.update(this.deltaTime, this.elapsedTime);
+        }
+
+        // Update achievement system
+        if (this.achievementSystem) {
+            this.achievementSystem.update();
+        }
+
+        // Render scene with post-processing
+        if (this.postProcessing) {
+            this.postProcessing.render();
+        } else {
+            this.renderer.render(this.scene, this.camera);
+        }
 
         // Update performance stats
         this.updatePerformance();

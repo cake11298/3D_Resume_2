@@ -94,6 +94,11 @@ export default class SceneManager {
         this.currentScene = scene;
         this.currentScene.enter();
 
+        // Track scene visit for achievements
+        if (this.app.achievementSystem) {
+            this.app.achievementSystem.trackSceneVisit(sceneName);
+        }
+
         // Transition in
         this.transitionIn();
     }
