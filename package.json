@@ -7,8 +7,14 @@
     "dev": "webpack serve --mode development --open",
     "build": "webpack --mode production",
     "start": "webpack serve --mode development",
+<<<<<<< HEAD
     "deploy": "npm run build && gh-pages -d dist"
+=======
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+>>>>>>> f72d9d2041abba278d4538bf4d8374fa8f88304a
   },
+  "homepage": "https://cake11298.github.io/3D_Resume_2",
   "keywords": [
     "threejs",
     "3d",
@@ -27,7 +33,11 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
+<<<<<<< HEAD
     "gh-pages": "^6.3.0",
+=======
+    "gh-pages": "^6.1.0",
+>>>>>>> f72d9d2041abba278d4538bf4d8374fa8f88304a
     "html-webpack-plugin": "^5.5.3",
     "style-loader": "^3.3.3",
     "webpack": "^5.89.0",
