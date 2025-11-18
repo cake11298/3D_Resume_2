@@ -104,6 +104,9 @@ export default class SceneManager {
             this.app.achievementSystem.trackSceneVisit(sceneName);
         }
 
+        // Show scene info (title + description)
+        this.showSceneInfo(sceneName);
+
         // Load content for this scene
         if (this.app.contentDisplayManager) {
             this.app.contentDisplayManager.loadSceneContent(sceneName);

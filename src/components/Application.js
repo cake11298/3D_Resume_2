@@ -123,6 +123,8 @@ export default class Application {
         this.controls.minDistance = 2;
         this.controls.maxDistance = 20;
         this.controls.maxPolarAngle = Math.PI / 1.5;
+        // Disable zoom (mouse wheel is used for content navigation)
+        this.controls.enableZoom = false;
     }
 
     setupLights() {
