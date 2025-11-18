@@ -10,6 +10,7 @@ export default class ContentDisplayManager {
         this.titleElement = document.getElementById('content-title');
         this.textElement = document.getElementById('content-text');
         this.hintElement = document.getElementById('content-hint');
+        this.blackTransition = document.getElementById('black-transition');
 
         // Content state
         this.currentScene = null;
@@ -19,7 +20,7 @@ export default class ContentDisplayManager {
 
         // Scroll handling
         this.scrollCooldown = false;
-        this.scrollCooldownTime = 800; // ms
+        this.scrollCooldownTime = 1200; // ms (increased for cinematic effect)
 
         this.setupScrollListener();
     }
@@ -239,7 +240,7 @@ export default class ContentDisplayManager {
     }
 
     /**
-     * Show a specific segment
+     * Show a specific segment with cinematic black transition
      * @param {number} index
      */
     showSegment(index) {
@@ -249,21 +250,57 @@ export default class ContentDisplayManager {
         this.isTransitioning = true;
         const segment = this.currentSegments[index];
 
-        // Fade out current content
         if (this.currentSegmentIndex >= 0) {
+            // CINEMATIC TRANSITION: Fade to black → Change content → Fade from black
+
+            // Step 1: Fade current content out
             this.fadeOut(() => {
-                this.updateContent(segment);
-                this.fadeIn();
-                this.currentSegmentIndex = index;
-                this.updateHint();
+
+                // Step 2: Black screen transition
+                this.showBlackScreen(() => {
+
+                    // Step 3: Update content while screen is black
+                    this.updateContent(segment);
+
+                    // Step 4: Hide black screen and fade in new content
+                    this.hideBlackScreen(() => {
+                        this.fadeIn();
+                        this.currentSegmentIndex = index;
+                        this.updateHint();
+                    });
+                });
             });
         } else {
-            // First segment - just fade in
+            // First segment - no black transition, just fade in
             this.updateContent(segment);
             this.fadeIn();
             this.currentSegmentIndex = index;
             this.updateHint();
         }
+    }
+
+    /**
+     * Show black screen (cinematic transition)
+     * @param {Function} callback
+     */
+    showBlackScreen(callback) {
+        this.blackTransition.classList.add('active');
+        setTimeout(() => {
+            if (callback) callback();
+        }, 600); // Match CSS transition duration
+    }
+
+    /**
+     * Hide black screen
+     * @param {Function} callback
+     */
+    hideBlackScreen(callback) {
+        setTimeout(() => {
+            this.blackTransition.classList.remove('active');
+            setTimeout(() => {
+                if (callback) callback();
+            }, 600); // Match CSS transition duration
+        }, 100);
     }
 
     /**
