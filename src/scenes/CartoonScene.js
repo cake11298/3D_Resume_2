@@ -13,6 +13,9 @@ export default class CartoonScene extends BaseScene {
     init() {
         super.init();
 
+        // FIX: Add proper lighting for cartoon scene
+        this.setupCartoonLighting();
+
         // Change scene background to bright color
         this.createColorfulBackground();
 
@@ -36,6 +39,48 @@ export default class CartoonScene extends BaseScene {
 
         // Create rainbow
         this.createRainbow();
+    }
+
+    setupCartoonLighting() {
+        // Strong ambient light for bright cartoon look
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1.2);
+        this.add(ambientLight);
+
+        // Main directional light (sun)
+        const sunLight = new THREE.DirectionalLight(0xFFFFEE, 1.5);
+        sunLight.position.set(10, 20, 10);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 50;
+        sunLight.shadow.camera.left = -30;
+        sunLight.shadow.camera.right = 30;
+        sunLight.shadow.camera.top = 30;
+        sunLight.shadow.camera.bottom = -30;
+        this.add(sunLight);
+
+        // Fill light (opposite side, softer)
+        const fillLight = new THREE.DirectionalLight(0x87CEEB, 0.6);
+        fillLight.position.set(-10, 10, -10);
+        this.add(fillLight);
+
+        // Colorful accent lights
+        const accentColors = [
+            { color: 0xFF69B4, pos: [-10, 5, 5] },   // Pink
+            { color: 0x90EE90, pos: [10, 5, 5] },    // Green
+            { color: 0xFFFF00, pos: [0, 5, -10] }    // Yellow
+        ];
+
+        accentColors.forEach(light => {
+            const pointLight = new THREE.PointLight(light.color, 0.5, 20);
+            pointLight.position.set(...light.pos);
+            this.add(pointLight);
+        });
+
+        // Hemisphere light for natural sky-ground gradient
+        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x90EE90, 0.6);
+        this.add(hemiLight);
     }
 
     createColorfulBackground() {
