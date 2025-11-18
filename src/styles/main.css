@@ -248,8 +248,13 @@ html, body {
     justify-content: center;
     align-items: center;
     gap: 5px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 100;
+}
+
+/* Move button when menu is open */
+#menu-toggle.active {
+    left: calc(280px + 1rem);
 }
 
 #menu-toggle:hover {
@@ -339,44 +344,22 @@ html, body {
     border-radius: 3px;
 }
 
-/* --- MINI MAP --- */
+/* --- MINI MAP (REMOVED - User feedback: unclear purpose) --- */
 #mini-map {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 200px;
-    height: 200px;
-    background: var(--ui-bg);
-    border: 2px solid var(--neon-purple);
-    border-radius: 5px;
-    padding: 0.5rem;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+    display: none;
 }
 
 #mini-map-canvas {
-    width: 100%;
-    height: 100%;
-    border-radius: 3px;
+    display: none;
 }
 
-/* --- INSTRUCTIONS --- */
+/* --- INSTRUCTIONS (REMOVED - User feedback: WASD/SPACE controls don't exist) --- */
 #instructions {
-    position: fixed;
-    bottom: 2rem;
-    left: 2rem;
-    background: var(--ui-bg);
-    border: 2px solid var(--neon-pink);
-    border-radius: 5px;
-    padding: 1rem;
-    backdrop-filter: blur(10px);
-    max-width: 300px;
-    font-size: 0.85rem;
-    line-height: 1.6;
+    display: none;
 }
 
 #instructions p {
-    margin-bottom: 0.5rem;
+    display: none;
 }
 
 /* --- SCENE INFO --- */
@@ -406,6 +389,97 @@ html, body {
 #scene-description {
     font-size: 1.2rem;
     color: var(--neon-blue);
+}
+
+/* --- 3D CONTENT DISPLAY SYSTEM (Subtitle Style) --- */
+#content-display {
+    position: fixed;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 900px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.content-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    margin-bottom: 1.5rem;
+}
+
+.content-section.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.content-section.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+#content-title h1 {
+    font-size: 2.5rem;
+    color: var(--neon-pink);
+    text-shadow:
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 30px rgba(255, 0, 255, 0.5);
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#content-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--neon-blue);
+    text-shadow:
+        0 0 5px var(--neon-blue),
+        0 0 10px rgba(0, 255, 255, 0.3);
+    margin: 0;
+    padding: 1rem 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    border-left: 3px solid var(--neon-blue);
+    border-right: 3px solid var(--neon-blue);
+    white-space: pre-wrap;
+}
+
+#content-hint {
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#content-hint.show {
+    opacity: 1;
+    animation: hint-bounce 2s ease-in-out infinite;
+}
+
+#content-hint p {
+    font-size: 0.9rem;
+    color: var(--electric-yellow);
+    text-shadow: 0 0 5px var(--electric-yellow);
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+@keyframes hint-bounce {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    50% {
+        transform: translateX(-50%) translateY(5px);
+    }
 }
 
 /* --- PERFORMANCE STATS --- */
@@ -676,19 +750,9 @@ html, body {
     font-size: 0.85rem;
 }
 
-/* Achievement Progress Bar */
+/* Achievement Progress Bar (REMOVED - User feedback: "0/12" progress bar not intuitive) */
 #achievement-progress {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--ui-bg);
-    border: 2px solid var(--electric-yellow);
-    border-radius: 20px;
-    padding: 0.8rem 1.5rem;
-    backdrop-filter: blur(10px);
-    min-width: 200px;
-    text-align: center;
+    display: none;
 }
 
 #achievement-count {
@@ -729,6 +793,21 @@ html, body {
     #achievement-progress {
         bottom: 1rem;
     }
+
+    /* Content Display Responsive */
+    #content-display {
+        width: 90%;
+        bottom: 10%;
+    }
+
+    #content-title h1 {
+        font-size: 2rem;
+    }
+
+    #content-text p {
+        font-size: 1rem;
+        padding: 0.8rem 1rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -746,5 +825,26 @@ html, body {
 
     .achievement-icon {
         font-size: 2rem;
+    }
+
+    /* Content Display Mobile */
+    #content-display {
+        width: 95%;
+        bottom: 8%;
+    }
+
+    #content-title h1 {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    #content-text p {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        padding: 0.6rem 0.8rem;
+    }
+
+    #content-hint p {
+        font-size: 0.8rem;
     }
 }
