@@ -391,6 +391,24 @@ html, body {
     color: var(--neon-blue);
 }
 
+/* --- BLACK SCREEN TRANSITION (Cinematic Slide Effect) --- */
+#black-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 999;
+    transition: opacity 0.6s ease-in-out;
+}
+
+#black-transition.active {
+    opacity: 1;
+}
+
 /* --- 3D CONTENT DISPLAY SYSTEM (Subtitle Style) --- */
 #content-display {
     position: fixed;
