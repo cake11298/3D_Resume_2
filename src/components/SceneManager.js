@@ -8,6 +8,10 @@ import HomeScene from '../scenes/HomeScene';
 import CyberpunkCityScene from '../scenes/CyberpunkCityScene';
 import RockStageScene from '../scenes/RockStageScene';
 import ArcadeScene from '../scenes/ArcadeScene';
+import TimelineScene from '../scenes/TimelineScene';
+import GalaxyScene from '../scenes/GalaxyScene';
+import CartoonScene from '../scenes/CartoonScene';
+import NetworkScene from '../scenes/NetworkScene';
 
 export default class SceneManager {
     constructor(app) {
@@ -21,8 +25,11 @@ export default class SceneManager {
             'home': HomeScene,
             'cyberpunk-city': CyberpunkCityScene,
             'rock-stage': RockStageScene,
-            'arcade': ArcadeScene
-            // More scenes will be added as we develop them
+            'arcade': ArcadeScene,
+            'timeline': TimelineScene,
+            'galaxy': GalaxyScene,
+            'cartoon': CartoonScene,
+            'network': NetworkScene
         };
 
         // Initialize with home scene

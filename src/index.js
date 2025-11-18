@@ -14,9 +14,11 @@ if (!checkWebGLSupport()) {
 // Loading manager
 const loadingManager = new THREE.LoadingManager();
 let loadingPercentage = 0;
+let hasResources = false;
 
 // Update loading progress
 loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    hasResources = true;
     loadingPercentage = (itemsLoaded / itemsTotal) * 100;
     updateLoadingScreen(loadingPercentage);
 };
@@ -33,6 +35,26 @@ loadingManager.onLoad = () => {
 loadingManager.onError = (url) => {
     console.error('❌ Error loading:', url);
 };
+
+// Simulate loading progress if no resources (for initial setup)
+function simulateLoading() {
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            updateLoadingScreen(100);
+            setTimeout(() => {
+                if (!hasResources) {
+                    hideLoadingScreen();
+                }
+            }, 300);
+        } else {
+            updateLoadingScreen(progress);
+        }
+    }, 150);
+}
 
 // Update loading screen UI
 function updateLoadingScreen(percentage) {
@@ -61,6 +83,9 @@ function hideLoadingScreen() {
 // Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Initializing Gustave 3D Resume...');
+
+    // Start loading simulation
+    simulateLoading();
 
     // Create and start the application
     const app = new Application({
