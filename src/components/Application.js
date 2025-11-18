@@ -8,6 +8,7 @@ import AudioManager from './AudioManager';
 import PostProcessingManager from './PostProcessingManager';
 import InteractionManager from './InteractionManager';
 import AchievementSystem from './AchievementSystem';
+import ContentDisplayManager from './ContentDisplayManager';
 
 export default class Application {
     constructor(options = {}) {
@@ -27,6 +28,7 @@ export default class Application {
         this.postProcessing = null;
         this.interactionManager = null;
         this.achievementSystem = null;
+        this.contentDisplayManager = null;
 
         // Animation
         this.clock = new THREE.Clock();
@@ -65,9 +67,12 @@ export default class Application {
         this.sceneManager = new SceneManager(this);
         this.inputController = new InputController(this);
         this.audioManager = new AudioManager(this);
-        this.postProcessing = new PostProcessingManager(this);
+        // Disable post-processing (too intense, causes motion sickness)
+        // this.postProcessing = new PostProcessingManager(this);
+        this.postProcessing = null;
         this.interactionManager = new InteractionManager(this);
         this.achievementSystem = new AchievementSystem(this);
+        this.contentDisplayManager = new ContentDisplayManager(this);
 
         // Setup UI
         this.setupUI();

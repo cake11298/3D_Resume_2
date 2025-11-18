@@ -93,35 +93,16 @@
             </div>
         </div>
 
-        <!-- Mini Map -->
-        <div id="mini-map">
-            <canvas id="mini-map-canvas" width="200" height="200"></canvas>
-        </div>
-
-        <!-- Instructions -->
-        <div id="instructions">
-            <p>🖱️ Click & Drag to rotate | 🎯 Click objects to interact</p>
-            <p>⌨️ WASD to move | SPACE to jump | ESC for menu</p>
-        </div>
-
-        <!-- Scene Info -->
-        <div id="scene-info">
-            <h2 id="scene-title">Welcome</h2>
-            <p id="scene-description">Loading your experience...</p>
-        </div>
-
-        <!-- Info Panel for Interactive Objects -->
-        <div id="info-panel" class="info-panel">
-            <button class="info-close" onclick="document.getElementById('info-panel').classList.remove('show')">✕</button>
-            <h3 class="info-title"></h3>
-            <div class="info-content"></div>
-        </div>
-
-        <!-- Achievement Progress -->
-        <div id="achievement-progress">
-            <span id="achievement-count">0/12</span>
-            <div class="achievement-bar">
-                <div class="achievement-bar-fill" style="width: 0%"></div>
+        <!-- 3D Content Display System -->
+        <div id="content-display">
+            <div id="content-title" class="content-section">
+                <h1></h1>
+            </div>
+            <div id="content-text" class="content-section">
+                <p></p>
+            </div>
+            <div id="content-hint">
+                <p>滾動滑鼠查看更多 ⬇️</p>
             </div>
         </div>
     </div>

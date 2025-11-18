@@ -90,6 +90,11 @@ export default class SceneManager {
             this.currentScene.exit();
         }
 
+        // Clear content display
+        if (this.app.contentDisplayManager) {
+            this.app.contentDisplayManager.clear();
+        }
+
         // Load new scene
         this.currentScene = scene;
         this.currentScene.enter();
@@ -97,6 +102,11 @@ export default class SceneManager {
         // Track scene visit for achievements
         if (this.app.achievementSystem) {
             this.app.achievementSystem.trackSceneVisit(sceneName);
+        }
+
+        // Load content for this scene
+        if (this.app.contentDisplayManager) {
+            this.app.contentDisplayManager.loadSceneContent(sceneName);
         }
 
         // Transition in
