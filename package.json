@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "webpack serve --mode development --open",
     "build": "webpack --mode production",
-    "start": "webpack serve --mode development"
+    "start": "webpack serve --mode development",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "keywords": [
     "threejs",
@@ -26,6 +27,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
+    "gh-pages": "^6.3.0",
     "html-webpack-plugin": "^5.5.3",
     "style-loader": "^3.3.3",
     "webpack": "^5.89.0",
@@ -33,7 +35,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "three": "^0.159.0",
-    "gsap": "^3.12.2"
+    "gsap": "^3.12.2",
+    "three": "^0.159.0"
   }
 }
