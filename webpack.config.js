@@ -11,7 +11,7 @@ module.exports = (env, argv) => {
     output: {
       filename: isDevelopment ? '[name].js' : '[name].[contenthash].js',
       path: path.resolve(__dirname, 'dist'),
-      publicPath: '/'
+      publicPath: isDevelopment ? '/' : '/3D_Resume_2/'
     },
     devtool: isDevelopment ? 'eval-source-map' : 'source-map',
     devServer: {

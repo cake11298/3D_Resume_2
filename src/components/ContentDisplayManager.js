@@ -30,8 +30,21 @@ export default class ContentDisplayManager {
      */
     setupScrollListener() {
         window.addEventListener('wheel', (event) => {
+            // Don't interfere if menu is open or hovering over UI elements
+            const mainNav = document.getElementById('main-nav');
+            const isMenuOpen = mainNav && !mainNav.classList.contains('nav-hidden');
+            const isOverUI = event.target.closest('#main-nav') ||
+                           event.target.closest('#settings-panel') ||
+                           event.target.closest('#settings-content');
+
+            // Allow normal scrolling when menu is open or over UI elements
+            if (isMenuOpen || isOverUI) return;
+
             if (this.scrollCooldown || this.isTransitioning) return;
             if (this.currentSegments.length === 0) return;
+
+            // Prevent default scroll behavior when navigating content
+            event.preventDefault();
 
             const delta = event.deltaY;
 
@@ -49,7 +62,7 @@ export default class ContentDisplayManager {
             setTimeout(() => {
                 this.scrollCooldown = false;
             }, this.scrollCooldownTime);
-        }, { passive: true });
+        }, { passive: false }); // passive: false allows preventDefault()
     }
 
     /**
@@ -76,7 +89,7 @@ export default class ContentDisplayManager {
             if (this.currentSegments.length > 0) {
                 this.showSegment(0);
             }
-        }, 2500); // Wait for "Explore my journey..." to finish
+        }, 1500); // Wait for scene intro to finish (1.5 seconds)
     }
 
     /**
