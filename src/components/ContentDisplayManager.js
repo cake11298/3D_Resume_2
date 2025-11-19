@@ -18,51 +18,9 @@ export default class ContentDisplayManager {
         this.currentSegmentIndex = -1;
         this.isTransitioning = false;
 
-        // Scroll handling
-        this.scrollCooldown = false;
-        this.scrollCooldownTime = 1200; // ms (increased for cinematic effect)
-
-        this.setupScrollListener();
-    }
-
-    /**
-     * Setup mouse wheel listener for content navigation
-     */
-    setupScrollListener() {
-        window.addEventListener('wheel', (event) => {
-            // Don't interfere if menu is open or hovering over UI elements
-            const mainNav = document.getElementById('main-nav');
-            const isMenuOpen = mainNav && !mainNav.classList.contains('nav-hidden');
-            const isOverUI = event.target.closest('#main-nav') ||
-                           event.target.closest('#settings-panel') ||
-                           event.target.closest('#settings-content');
-
-            // Allow normal scrolling when menu is open or over UI elements
-            if (isMenuOpen || isOverUI) return;
-
-            if (this.scrollCooldown || this.isTransitioning) return;
-            if (this.currentSegments.length === 0) return;
-
-            // Prevent default scroll behavior when navigating content
-            event.preventDefault();
-
-            const delta = event.deltaY;
-
-            // Scroll down - next segment
-            if (delta > 0) {
-                this.nextSegment();
-            }
-            // Scroll up - previous segment
-            else if (delta < 0) {
-                this.previousSegment();
-            }
-
-            // Set cooldown to prevent rapid scrolling
-            this.scrollCooldown = true;
-            setTimeout(() => {
-                this.scrollCooldown = false;
-            }, this.scrollCooldownTime);
-        }, { passive: false }); // passive: false allows preventDefault()
+        // Button interaction cooldown
+        this.buttonCooldown = false;
+        this.buttonCooldownTime = 1200; // ms
     }
 
     /**
@@ -370,32 +328,67 @@ export default class ContentDisplayManager {
     }
 
     /**
-     * Update scroll hint visibility
+     * Update hint visibility - always show hint for button navigation
      */
     updateHint() {
-        if (this.currentSegmentIndex < this.currentSegments.length - 1) {
+        if (this.currentSegments.length > 1) {
             this.hintElement.classList.add('show');
+
+            // Update hint text based on position
+            const hintText = this.hintElement.querySelector('p');
+            if (hintText) {
+                const current = this.currentSegmentIndex + 1;
+                const total = this.currentSegments.length;
+                hintText.textContent = `按紅色按鈕查看下一段 (${current}/${total}) 🔴`;
+            }
         } else {
             this.hintElement.classList.remove('show');
         }
     }
 
     /**
-     * Show next segment
+     * Show next segment (循環：最後一段後回到第一段)
      */
     nextSegment() {
-        if (this.currentSegmentIndex < this.currentSegments.length - 1) {
-            this.showSegment(this.currentSegmentIndex + 1);
+        if (this.currentSegments.length === 0) return;
+
+        let nextIndex = this.currentSegmentIndex + 1;
+        // Loop back to first segment if at the end
+        if (nextIndex >= this.currentSegments.length) {
+            nextIndex = 0;
         }
+        this.showSegment(nextIndex);
     }
 
     /**
-     * Show previous segment
+     * Show previous segment (循環：第一段前回到最後一段)
      */
     previousSegment() {
-        if (this.currentSegmentIndex > 0) {
-            this.showSegment(this.currentSegmentIndex - 1);
+        if (this.currentSegments.length === 0) return;
+
+        let prevIndex = this.currentSegmentIndex - 1;
+        // Loop back to last segment if at the beginning
+        if (prevIndex < 0) {
+            prevIndex = this.currentSegments.length - 1;
         }
+        this.showSegment(prevIndex);
+    }
+
+    /**
+     * Handle nuclear button press - cycles through segments
+     */
+    onButtonPress() {
+        if (this.buttonCooldown || this.isTransitioning) return;
+        if (this.currentSegments.length === 0) return;
+
+        // Trigger next segment
+        this.nextSegment();
+
+        // Set cooldown
+        this.buttonCooldown = true;
+        setTimeout(() => {
+            this.buttonCooldown = false;
+        }, this.buttonCooldownTime);
     }
 
     /**
