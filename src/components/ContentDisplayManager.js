@@ -20,6 +20,7 @@ export default class ContentDisplayManager {
         this.currentSegmentIndex = -1;
         this.isTransitioning = false;
         this.isPlayingIntro = false; // Track if intro is being played
+        this.showingContent = false; // Track if content is currently shown
 
         // Button interaction cooldown
         this.buttonCooldown = false;
@@ -49,7 +50,8 @@ export default class ContentDisplayManager {
     loadSceneContent(sceneName, sceneData) {
         this.currentScene = sceneName;
         this.currentSegmentIndex = -1;
-        this.isPlayingIntro = true; // Mark as playing intro
+        this.isPlayingIntro = true;
+        this.showingContent = false;
 
         // Get content for this scene
         const content = this.getContentForScene(sceneName);
@@ -59,8 +61,8 @@ export default class ContentDisplayManager {
             return;
         }
 
-        // Prepare segments (including intro as first segment)
-        this.currentSegments = this.prepareSegments(content, sceneData);
+        // Prepare segments (NOT including intro - intro is separate)
+        this.currentSegments = this.prepareSegments(content);
 
         // Show button immediately (but will be disabled during intro)
         if (this.nuclearButtonContainer) {
@@ -68,18 +70,24 @@ export default class ContentDisplayManager {
             this.nuclearButton.classList.add('disabled');
         }
 
-        // Show first segment (scene intro) immediately
-        if (this.currentSegments.length > 0) {
-            this.showSegment(0);
+        // Show scene intro first
+        if (sceneData) {
+            this.showIntro(sceneData);
 
-            // Enable button after intro is done (2 seconds like original scene-info)
+            // After 2 seconds, hide intro and show first content segment
             setTimeout(() => {
-                this.isPlayingIntro = false;
-                if (this.nuclearButton) {
-                    this.nuclearButton.classList.remove('disabled');
-                }
-                // Update hint to show button is now active
-                this.updateHint();
+                this.fadeOut(() => {
+                    this.isPlayingIntro = false;
+                    if (this.nuclearButton) {
+                        this.nuclearButton.classList.remove('disabled');
+                    }
+
+                    // Show first content segment (persistent)
+                    if (this.currentSegments.length > 0) {
+                        this.showSegment(0);
+                        this.showingContent = true;
+                    }
+                });
             }, 2000);
         }
     }
@@ -105,22 +113,36 @@ export default class ContentDisplayManager {
     }
 
     /**
+     * Show scene intro (separate from content segments)
+     * @param {Object} sceneData - Scene intro data (title + description)
+     */
+    showIntro(sceneData) {
+        const titleH1 = this.titleElement.querySelector('h1');
+        const textP = this.textElement.querySelector('p');
+
+        if (titleH1) titleH1.textContent = sceneData.title || '';
+        if (textP) textP.textContent = sceneData.description || '';
+
+        // Show title
+        this.titleElement.style.display = 'block';
+
+        // Fade in intro
+        this.titleElement.classList.remove('fade-out');
+        this.textElement.classList.remove('fade-out');
+        this.titleElement.classList.add('show');
+        this.textElement.classList.add('show');
+
+        // Hide hint during intro
+        this.hintElement.classList.remove('show');
+    }
+
+    /**
      * Prepare content segments from scene data
      * @param {Object} content - Scene content object
-     * @param {Object} sceneData - Scene intro data (title + description)
      * @returns {Array} Array of segment objects
      */
-    prepareSegments(content, sceneData) {
+    prepareSegments(content) {
         const segments = [];
-
-        // Add scene intro as first segment
-        if (sceneData) {
-            segments.push({
-                title: sceneData.title,
-                text: sceneData.description,
-                isIntro: true
-            });
-        }
 
         // Handle different content structures for each scene
         if (this.currentScene === 'home') {
@@ -395,17 +417,26 @@ export default class ContentDisplayManager {
     }
 
     /**
-     * Show next segment (循環：最後一段後回到第一段)
+     * Show next segment (循環：內容1 → ... → 內容N → 空白 → 內容1)
      */
     nextSegment() {
         if (this.currentSegments.length === 0) return;
 
-        let nextIndex = this.currentSegmentIndex + 1;
-        // Loop back to first segment if at the end
-        if (nextIndex >= this.currentSegments.length) {
-            nextIndex = 0;
+        if (!this.showingContent) {
+            // Currently showing nothing (blank), go back to first segment
+            this.showSegment(0);
+            this.showingContent = true;
+        } else {
+            let nextIndex = this.currentSegmentIndex + 1;
+            if (nextIndex >= this.currentSegments.length) {
+                // Reached the end, hide all content (show blank)
+                this.hideContent();
+                this.showingContent = false;
+            } else {
+                // Show next segment
+                this.showSegment(nextIndex);
+            }
         }
-        this.showSegment(nextIndex);
     }
 
     /**
@@ -420,6 +451,16 @@ export default class ContentDisplayManager {
             prevIndex = this.currentSegments.length - 1;
         }
         this.showSegment(prevIndex);
+    }
+
+    /**
+     * Hide content (show blank state)
+     */
+    hideContent() {
+        this.fadeOut(() => {
+            this.currentSegmentIndex = -1;
+            this.hintElement.classList.remove('show');
+        });
     }
 
     /**
