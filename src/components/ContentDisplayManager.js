@@ -327,9 +327,11 @@ export default class ContentDisplayManager {
      */
     fadeIn() {
         setTimeout(() => {
-            this.titleElement.querySelector('.content-section')?.classList.remove('fade-out');
-            this.textElement.querySelector('.content-section')?.classList.remove('fade-out');
+            // Remove fade-out from the elements themselves (they ARE .content-section)
+            this.titleElement.classList.remove('fade-out');
+            this.textElement.classList.remove('fade-out');
 
+            // Add show class to make content visible
             this.titleElement.classList.add('show');
             this.textElement.classList.add('show');
 
