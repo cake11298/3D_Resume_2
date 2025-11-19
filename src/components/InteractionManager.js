@@ -157,6 +157,28 @@ export default class InteractionManager {
     handleClick(object) {
         console.log('Clicked:', object.userData.name || object.name);
 
+        // Special handling for nuclear button
+        if (object.userData.isNuclearButton) {
+            console.log('🔴 Nuclear Button Pressed!');
+
+            // Trigger button press animation
+            if (this.app.nuclearButton) {
+                this.app.nuclearButton.press();
+            }
+
+            // Trigger content navigation
+            if (this.app.contentDisplayManager) {
+                this.app.contentDisplayManager.onButtonPress();
+            }
+
+            // Play audio (if audio manager available)
+            if (this.app.audioManager) {
+                // this.app.audioManager.playSound('button-press');
+            }
+
+            return; // Skip normal click animation for button
+        }
+
         // Play click animation
         this.playClickAnimation(object);
 
