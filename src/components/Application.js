@@ -9,7 +9,6 @@ import PostProcessingManager from './PostProcessingManager';
 import InteractionManager from './InteractionManager';
 import AchievementSystem from './AchievementSystem';
 import ContentDisplayManager from './ContentDisplayManager';
-import NuclearButton from './NuclearButton';
 
 export default class Application {
     constructor(options = {}) {
@@ -30,7 +29,6 @@ export default class Application {
         this.interactionManager = null;
         this.achievementSystem = null;
         this.contentDisplayManager = null;
-        this.nuclearButton = null;
 
         // Animation
         this.clock = new THREE.Clock();
@@ -75,19 +73,6 @@ export default class Application {
         this.interactionManager = new InteractionManager(this);
         this.achievementSystem = new AchievementSystem(this);
         this.contentDisplayManager = new ContentDisplayManager(this);
-
-        // Setup nuclear button for content navigation
-        this.nuclearButton = new NuclearButton(this);
-        this.nuclearButton.addToScene(this.scene);
-
-        // Register nuclear button as interactive
-        this.interactionManager.addInteractiveObject(
-            this.nuclearButton.getInteractiveMesh(),
-            {
-                name: 'Nuclear Button',
-                onClick: null // Handled directly in InteractionManager
-            }
-        );
 
         // Setup UI
         this.setupUI();
@@ -327,11 +312,6 @@ export default class Application {
         // Update achievement system
         if (this.achievementSystem) {
             this.achievementSystem.update();
-        }
-
-        // Update nuclear button animation
-        if (this.nuclearButton) {
-            this.nuclearButton.update(this.deltaTime, this.elapsedTime);
         }
 
         // Render scene with post-processing

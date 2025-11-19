@@ -11,6 +11,8 @@ export default class ContentDisplayManager {
         this.textElement = document.getElementById('content-text');
         this.hintElement = document.getElementById('content-hint');
         this.blackTransition = document.getElementById('black-transition');
+        this.nuclearButton = document.getElementById('nuclear-button');
+        this.nuclearButtonContainer = document.getElementById('nuclear-button-container');
 
         // Content state
         this.currentScene = null;
@@ -21,6 +23,21 @@ export default class ContentDisplayManager {
         // Button interaction cooldown
         this.buttonCooldown = false;
         this.buttonCooldownTime = 1200; // ms
+
+        // Setup button click listener
+        this.setupButtonListener();
+    }
+
+    /**
+     * Setup nuclear button click listener
+     */
+    setupButtonListener() {
+        if (this.nuclearButton) {
+            this.nuclearButton.addEventListener('click', () => {
+                console.log('🔴 Nuclear Button Clicked!');
+                this.onButtonPress();
+            });
+        }
     }
 
     /**
@@ -42,12 +59,23 @@ export default class ContentDisplayManager {
         // Prepare segments
         this.currentSegments = this.prepareSegments(content);
 
-        // Wait for scene transition to complete, then show first segment
+        // Hide button initially
+        if (this.nuclearButtonContainer) {
+            this.nuclearButtonContainer.classList.remove('show');
+        }
+
+        // Wait for scene transition AND scene info to complete, then show first segment
+        // SceneManager shows scene info, then hides it after 2 seconds in hideSceneInfo()
+        // We need to wait at least 2.5 seconds to ensure scene info is fully hidden
         setTimeout(() => {
             if (this.currentSegments.length > 0) {
                 this.showSegment(0);
+                // Show button when content is ready
+                if (this.nuclearButtonContainer) {
+                    this.nuclearButtonContainer.classList.add('show');
+                }
             }
-        }, 1500); // Wait for scene intro to finish (1.5 seconds)
+        }, 2800); // Wait 2.8 seconds to ensure scene info is completely hidden
     }
 
     /**
@@ -398,6 +426,9 @@ export default class ContentDisplayManager {
         this.titleElement.classList.remove('show');
         this.textElement.classList.remove('show');
         this.hintElement.classList.remove('show');
+        if (this.nuclearButtonContainer) {
+            this.nuclearButtonContainer.classList.remove('show');
+        }
         this.currentSegments = [];
         this.currentSegmentIndex = -1;
     }
@@ -406,6 +437,10 @@ export default class ContentDisplayManager {
      * Clear content when scene changes
      */
     clear() {
+        // Hide button immediately when clearing
+        if (this.nuclearButtonContainer) {
+            this.nuclearButtonContainer.classList.remove('show');
+        }
         this.fadeOut(() => {
             this.hideAll();
         });

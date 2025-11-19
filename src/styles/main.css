@@ -500,6 +500,116 @@ html, body {
     }
 }
 
+/* --- NUCLEAR BUTTON (UI Layer) --- */
+#nuclear-button-container {
+    position: fixed;
+    bottom: 3rem;
+    right: 3rem;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+#nuclear-button-container.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.nuclear-button {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease;
+}
+
+.nuclear-button:hover {
+    transform: scale(1.05);
+}
+
+.nuclear-button:active {
+    transform: scale(0.95) translateY(5px);
+}
+
+/* Button base (底座) */
+.button-base {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 30%, #2a2a2a, #0a0a0a);
+    border-radius: 50%;
+    box-shadow:
+        0 8px 0 #000000,
+        0 10px 20px rgba(0, 0, 0, 0.8),
+        inset 0 -5px 10px rgba(0, 0, 0, 0.5);
+    border: 3px solid #1a1a1a;
+}
+
+/* Button top (按鈕主體) */
+.button-top {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 70%;
+    background: radial-gradient(circle at 30% 30%, #ff3333, #cc0000);
+    border-radius: 50%;
+    box-shadow:
+        0 5px 15px rgba(255, 0, 0, 0.5),
+        inset 0 -3px 8px rgba(0, 0, 0, 0.4),
+        inset 0 3px 8px rgba(255, 100, 100, 0.4);
+    animation: nuclear-pulse 2s ease-in-out infinite;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.nuclear-button:active .button-top {
+    transform: translateY(5px);
+    box-shadow:
+        0 2px 8px rgba(255, 0, 0, 0.3),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.4),
+        inset 0 2px 5px rgba(255, 100, 100, 0.4);
+}
+
+@keyframes nuclear-pulse {
+    0%, 100% {
+        box-shadow:
+            0 5px 15px rgba(255, 0, 0, 0.5),
+            0 0 20px rgba(255, 0, 0, 0.3),
+            inset 0 -3px 8px rgba(0, 0, 0, 0.4),
+            inset 0 3px 8px rgba(255, 100, 100, 0.4);
+    }
+    50% {
+        box-shadow:
+            0 5px 20px rgba(255, 0, 0, 0.8),
+            0 0 40px rgba(255, 0, 0, 0.6),
+            inset 0 -3px 8px rgba(0, 0, 0, 0.4),
+            inset 0 3px 8px rgba(255, 100, 100, 0.4);
+    }
+}
+
+/* Button label */
+.button-label {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff0000;
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-shadow:
+        0 0 5px rgba(255, 0, 0, 0.8),
+        0 0 10px rgba(255, 0, 0, 0.4);
+    white-space: nowrap;
+}
+
 /* --- PERFORMANCE STATS --- */
 #performance-stats {
     position: fixed;
