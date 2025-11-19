@@ -973,31 +973,30 @@ html, body {
 /* --- NAVIGATION HINT (Initial User Guide) --- */
 .navigation-hint {
     position: fixed;
-    top: 50%;
+    bottom: 2rem;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%) translateY(20px);
     background: var(--ui-bg);
     border: 2px solid var(--neon-purple);
     border-radius: 10px;
-    padding: 2rem 3rem;
+    padding: 1.5rem 2.5rem;
     backdrop-filter: blur(15px);
     box-shadow: 0 0 40px rgba(157, 0, 255, 0.6);
     text-align: center;
     z-index: 1500;
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
 }
 
 .navigation-hint.show {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateX(-50%) translateY(0);
 }
 
 .navigation-hint.fade-out {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.95);
+    transform: translateX(-50%) translateY(20px);
 }
 
 .navigation-hint p {

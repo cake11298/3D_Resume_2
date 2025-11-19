@@ -4,7 +4,7 @@ export const resumeContent = {
     home: {
         title: "Gustave 的數位宇宙 🚀",
         greeting: "嘿，我是 Gustave。",
-        description: "這裡是我的一點紀錄 — 寫過的程式、做過的專案、還有一些關於我的事。",
+        description: "這裡是我的一點紀錄 — 寫過的程式、做過的專案、還有一些關於我的事。\n\n在虛擬世界，我更常被叫 cake11298（競程和技術社群的 ID）或蛋糕大叔。",
         instruction: "左上角選單可以看看我在幹嘛。"
     },
 
@@ -167,7 +167,7 @@ export const resumeContent = {
         subtitle: "EDUCATION",
         items: [
             {
-                school: "National Taiwan University of Science and Technology",
+                school: "臺灣科技大學 National Taiwan University of Science and Technology",
                 degree: "資訊工程系",
                 period: "現在",
                 icon: "🎓",
@@ -176,8 +176,8 @@ export const resumeContent = {
                 color: 0xFF00FF
             },
             {
-                school: "Université de Liège, Belgium",
-                degree: "交換學生",
+                school: "比利時列日大學 Université de Liège",
+                degree: "電腦科學系 | 交換學生",
                 period: "2021-2022",
                 icon: "🌍",
                 description: "在比利時待了一年。學會法文，也改變了一些看事情的角度。",
@@ -185,8 +185,8 @@ export const resumeContent = {
                 color: 0x00FFFF
             },
             {
-                school: "National Central University",
-                degree: "起點",
+                school: "中央大學 National Central University",
+                degree: "資訊電機不分系",
                 period: "2018-2021",
                 icon: "🏆",
                 description: "ICPC Taiwan Top 30% 是在這裡訓練出來的。演算法和資料結構的基礎也是。",
