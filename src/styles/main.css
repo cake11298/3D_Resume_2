@@ -969,3 +969,79 @@ html, body {
         font-size: 0.8rem;
     }
 }
+
+/* --- NAVIGATION HINT (Initial User Guide) --- */
+.navigation-hint {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--ui-bg);
+    border: 2px solid var(--neon-purple);
+    border-radius: 10px;
+    padding: 2rem 3rem;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 40px rgba(157, 0, 255, 0.6);
+    text-align: center;
+    z-index: 1500;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.navigation-hint.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.navigation-hint.fade-out {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+.navigation-hint p {
+    color: var(--neon-blue);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 0.5rem 0;
+    text-shadow: 0 0 5px var(--neon-blue);
+}
+
+.navigation-hint p:first-child {
+    color: var(--electric-yellow);
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--electric-yellow);
+}
+
+@media (max-width: 768px) {
+    .navigation-hint {
+        width: 85%;
+        padding: 1.5rem 2rem;
+    }
+
+    .navigation-hint p {
+        font-size: 1rem;
+    }
+
+    .navigation-hint p:first-child {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .navigation-hint {
+        width: 90%;
+        padding: 1rem 1.5rem;
+    }
+
+    .navigation-hint p {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .navigation-hint p:first-child {
+        font-size: 1rem;
+    }
+}

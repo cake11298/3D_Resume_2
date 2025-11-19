@@ -13,6 +13,9 @@ import GalaxyScene from '../scenes/GalaxyScene';
 import CartoonScene from '../scenes/CartoonScene';
 import NetworkScene from '../scenes/NetworkScene';
 
+// Import resume content data
+import { resumeContent } from '../data/resumeContent';
+
 export default class SceneManager {
     constructor(app) {
         this.app = app;
@@ -31,6 +34,14 @@ export default class SceneManager {
             'cartoon': CartoonScene,
             'network': NetworkScene
         };
+
+        // Content segment state management
+        this.currentSegmentIndex = 0;  // Current segment being displayed
+        this.currentSegments = [];     // All segments for current scene
+        this.isContentTransitioning = false;
+
+        // Setup button listener for content navigation
+        this.setupButtonListener();
 
         // Note: Don't initialize home scene here, wait for all managers to be ready
         // Will be initialized by Application after ContentDisplayManager is ready
@@ -90,11 +101,6 @@ export default class SceneManager {
             this.currentScene.exit();
         }
 
-        // Clear content display
-        if (this.app.contentDisplayManager) {
-            this.app.contentDisplayManager.clear();
-        }
-
         // Load new scene
         this.currentScene = scene;
         this.currentScene.enter();
@@ -104,10 +110,8 @@ export default class SceneManager {
             this.app.achievementSystem.trackSceneVisit(sceneName);
         }
 
-        // Load content for this scene (履歷內容)
-        if (this.app.contentDisplayManager) {
-            this.app.contentDisplayManager.loadSceneContent(sceneName);
-        }
+        // Note: Content loading is now handled by showSceneInfo() in switchScene()
+        // No need to call ContentDisplayManager - SceneManager handles all content display
 
         // Transition in
         this.transitionIn();
@@ -163,74 +167,200 @@ export default class SceneManager {
      * @param {string} sceneName - Name of the scene
      */
     showSceneInfo(sceneName) {
-        const sceneInfo = document.getElementById('scene-info');
-        const sceneTitle = document.getElementById('scene-title');
-        const sceneDescription = document.getElementById('scene-description');
-
         const sceneData = this.getSceneData(sceneName);
 
-        if (sceneTitle) sceneTitle.textContent = sceneData.title;
-        if (sceneDescription) sceneDescription.textContent = sceneData.description;
+        // Initialize segments for this scene
+        this.currentSegments = sceneData.segments || [];
+        this.currentSegmentIndex = 0;
 
-        if (sceneInfo) {
-            sceneInfo.classList.add('show');
+        // Display first segment
+        if (this.currentSegments.length > 0) {
+            this.displaySegment(0);
         }
+
+        // Show nuclear button
+        const buttonContainer = document.getElementById('nuclear-button-container');
+        if (buttonContainer) {
+            buttonContainer.classList.add('show');
+        }
+
+        // Show navigation hint after a delay
+        this.showInitialHint();
     }
 
     /**
      * Hide scene information overlay
+     * Note: Removed automatic hiding - content now controlled by button press
      */
     hideSceneInfo() {
-        setTimeout(() => {
-            const sceneInfo = document.getElementById('scene-info');
-            if (sceneInfo) {
-                sceneInfo.classList.remove('show');
-            }
-        }, 2000);
+        // Auto-hide removed - content stays visible until user interacts
+        // Button press now controls content display
     }
 
     /**
-     * Get scene metadata
+     * Get scene metadata with content segments
      * @param {string} sceneName - Name of the scene
-     * @returns {Object} Scene data
+     * @returns {Object} Scene data with segments array
      */
     getSceneData(sceneName) {
-        const sceneDataMap = {
-            'home': {
-                title: 'Welcome',
-                description: 'Enter the digital realm of Gustave'
-            },
-            'cyberpunk-city': {
-                title: 'About Me',
-                description: 'Explore my journey in the neon city'
-            },
-            'rock-stage': {
-                title: 'Skills',
-                description: 'Rock the stage with my technical abilities'
-            },
-            'arcade': {
-                title: 'Projects',
-                description: 'Play through my portfolio of work'
-            },
-            'timeline': {
-                title: 'Experience',
-                description: 'Travel through my career timeline'
-            },
-            'galaxy': {
-                title: 'Education',
-                description: 'Journey through the knowledge galaxy'
-            },
-            'cartoon': {
-                title: 'Hobbies',
-                description: 'Welcome to my colorful world'
-            },
-            'network': {
-                title: 'Contact',
-                description: 'Connect with me across the network'
-            }
+        const contentMap = {
+            'home': resumeContent.home,
+            'cyberpunk-city': resumeContent.about,
+            'rock-stage': resumeContent.skills,
+            'arcade': resumeContent.projects,
+            'timeline': resumeContent.experience,
+            'galaxy': resumeContent.education,
+            'cartoon': resumeContent.hobbies,
+            'network': resumeContent.contact
         };
 
-        return sceneDataMap[sceneName] || { title: sceneName, description: '' };
+        const content = contentMap[sceneName];
+        if (!content) {
+            return { segments: [] };
+        }
+
+        // Prepare segments based on scene type
+        return this.prepareSegments(sceneName, content);
+    }
+
+    /**
+     * Prepare content segments from scene data
+     * @param {string} sceneName - Name of the scene
+     * @param {Object} content - Scene content object
+     * @returns {Object} Object with segments array
+     */
+    prepareSegments(sceneName, content) {
+        const segments = [];
+
+        if (sceneName === 'home') {
+            segments.push({
+                title: content.title,
+                text: `${content.greeting}\n${content.description}`
+            });
+            segments.push({
+                title: '',
+                text: content.instruction
+            });
+        }
+        else if (sceneName === 'cyberpunk-city') {
+            segments.push({
+                title: content.subtitle,
+                text: content.intro
+            });
+            segments.push({
+                title: '',
+                text: content.background
+            });
+            segments.push({
+                title: '',
+                text: content.languages
+            });
+            segments.push({
+                title: '',
+                text: content.achievements
+            });
+            segments.push({
+                title: '',
+                text: content.current
+            });
+            segments.push({
+                title: content.future.title,
+                text: content.future.content
+            });
+        }
+        else if (sceneName === 'rock-stage') {
+            segments.push({
+                title: content.subtitle,
+                text: content.core.title
+            });
+            content.core.items.forEach(skill => {
+                segments.push({
+                    title: `${skill.icon} ${skill.name}`,
+                    text: skill.description
+                });
+            });
+            segments.push({
+                title: content.domains.title,
+                text: content.domains.items.join('\n\n')
+            });
+            segments.push({
+                title: content.other.title,
+                text: content.other.items.join('\n\n')
+            });
+        }
+        else if (sceneName === 'arcade') {
+            segments.push({
+                title: content.subtitle,
+                text: '互動的專案作品集'
+            });
+            content.items.forEach(project => {
+                const tags = project.tags.join(' | ');
+                segments.push({
+                    title: `${project.icon} ${project.name}`,
+                    text: `${project.type}\n\n${project.description}\n\n${tags}`
+                });
+            });
+        }
+        else if (sceneName === 'timeline') {
+            segments.push({
+                title: content.subtitle,
+                text: '我的工作經歷時間軸'
+            });
+            content.items.forEach(exp => {
+                const details = exp.details.length > 0 ? '\n\n• ' + exp.details.join('\n• ') : '';
+                segments.push({
+                    title: `${exp.icon} ${exp.company}`,
+                    text: `${exp.role}\n${exp.period}\n\n${exp.description}${details}`
+                });
+            });
+        }
+        else if (sceneName === 'galaxy') {
+            segments.push({
+                title: content.subtitle,
+                text: '教育背景與學習歷程'
+            });
+            content.items.forEach(edu => {
+                const courses = edu.courses.join(' | ');
+                segments.push({
+                    title: `${edu.icon} ${edu.school}`,
+                    text: `${edu.degree}\n${edu.period}\n\n${edu.description}\n\n${courses}`
+                });
+            });
+        }
+        else if (sceneName === 'cartoon') {
+            segments.push({
+                title: content.subtitle,
+                text: '我的興趣與生活'
+            });
+            content.items.forEach(hobby => {
+                segments.push({
+                    title: `${hobby.icon} ${hobby.name}`,
+                    text: hobby.description
+                });
+            });
+        }
+        else if (sceneName === 'network') {
+            segments.push({
+                title: content.subtitle,
+                text: content.quote
+            });
+            segments.push({
+                title: content.professional.title,
+                text: content.professional.items.map(item =>
+                    `${item.icon} ${item.label}: ${item.value}`
+                ).join('\n\n')
+            });
+            segments.push({
+                title: content.languages.title,
+                text: content.languages.items.join(' | ')
+            });
+            segments.push({
+                title: content.status.title,
+                text: content.status.message
+            });
+        }
+
+        return { segments };
     }
 
     /**
@@ -242,6 +372,101 @@ export default class SceneManager {
         if (this.currentScene && this.currentScene.update) {
             this.currentScene.update(deltaTime, elapsedTime);
         }
+    }
+
+    /**
+     * Setup nuclear button click listener
+     */
+    setupButtonListener() {
+        const nuclearButton = document.getElementById('nuclear-button');
+        if (nuclearButton) {
+            nuclearButton.addEventListener('click', () => {
+                console.log('🔴 Nuclear Button Clicked!');
+                this.nextSegment();
+            });
+        }
+    }
+
+    /**
+     * Display a specific segment
+     * @param {number} index - Segment index to display
+     */
+    displaySegment(index) {
+        if (index < 0 || index >= this.currentSegments.length) return;
+        if (this.isContentTransitioning) return;
+
+        const segment = this.currentSegments[index];
+        const sceneInfo = document.getElementById('scene-info');
+        const sceneTitle = document.getElementById('scene-title');
+        const sceneDescription = document.getElementById('scene-description');
+
+        // Update content
+        if (sceneTitle) {
+            sceneTitle.textContent = segment.title || '';
+            sceneTitle.style.display = segment.title ? 'block' : 'none';
+        }
+        if (sceneDescription) {
+            sceneDescription.textContent = segment.text || '';
+        }
+
+        // Show scene info container
+        if (sceneInfo) {
+            sceneInfo.classList.add('show');
+        }
+
+        this.currentSegmentIndex = index;
+    }
+
+    /**
+     * Show next segment (循環：內容1 → ... → 內容N → 內容1)
+     */
+    nextSegment() {
+        if (this.currentSegments.length === 0) return;
+        if (this.isContentTransitioning) return;
+
+        // Calculate next index (loop back to 0 after last segment)
+        let nextIndex = this.currentSegmentIndex + 1;
+        if (nextIndex >= this.currentSegments.length) {
+            nextIndex = 0; // Loop back to first segment
+        }
+
+        this.displaySegment(nextIndex);
+
+        console.log(`📄 Showing segment ${nextIndex + 1}/${this.currentSegments.length}`);
+    }
+
+    /**
+     * Show initial navigation hint
+     */
+    showInitialHint() {
+        // Remove existing hint if present
+        const existingHint = document.getElementById('navigation-hint');
+        if (existingHint) {
+            existingHint.remove();
+        }
+
+        // Create new hint
+        const hint = document.createElement('div');
+        hint.id = 'navigation-hint';
+        hint.classList.add('navigation-hint');
+        hint.innerHTML = `
+            <p>💡 按下紅色按鈕查看更多內容</p>
+            <p>想看其他主題？點擊左上角選單</p>
+        `;
+        document.body.appendChild(hint);
+
+        // Show hint with fade-in
+        setTimeout(() => {
+            hint.classList.add('show');
+        }, 100);
+
+        // Hide hint after 6 seconds with fade-out
+        setTimeout(() => {
+            hint.classList.add('fade-out');
+            setTimeout(() => {
+                hint.remove();
+            }, 1000);
+        }, 6000);
     }
 
     /**
