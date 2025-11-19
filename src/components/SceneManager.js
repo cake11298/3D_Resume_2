@@ -56,9 +56,6 @@ export default class SceneManager {
 
         this.isTransitioning = true;
 
-        // Show scene info
-        this.showSceneInfo(sceneName);
-
         // Transition out current scene
         if (this.currentScene) {
             this.transitionOut(() => {
@@ -104,12 +101,12 @@ export default class SceneManager {
             this.app.achievementSystem.trackSceneVisit(sceneName);
         }
 
-        // Show scene info (title + description)
-        this.showSceneInfo(sceneName);
+        // Get scene data (title + description)
+        const sceneData = this.getSceneData(sceneName);
 
-        // Load content for this scene
+        // Load content for this scene (including scene intro)
         if (this.app.contentDisplayManager) {
-            this.app.contentDisplayManager.loadSceneContent(sceneName);
+            this.app.contentDisplayManager.loadSceneContent(sceneName, sceneData);
         }
 
         // Transition in
@@ -156,7 +153,6 @@ export default class SceneManager {
             ease: 'power2.out',
             onComplete: () => {
                 this.isTransitioning = false;
-                this.hideSceneInfo();
             }
         });
     }
