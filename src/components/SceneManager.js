@@ -460,13 +460,13 @@ export default class SceneManager {
             hint.classList.add('show');
         }, 100);
 
-        // Hide hint after 6 seconds with fade-out
+        // Hide hint after 3.6 seconds (60% of original 6s) with fade-out
         setTimeout(() => {
             hint.classList.add('fade-out');
             setTimeout(() => {
                 hint.remove();
             }, 1000);
-        }, 6000);
+        }, 3600);
     }
 
     /**
