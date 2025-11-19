@@ -32,8 +32,8 @@ export default class SceneManager {
             'network': NetworkScene
         };
 
-        // Initialize with home scene
-        this.switchScene('home');
+        // Note: Don't initialize home scene here, wait for all managers to be ready
+        // Will be initialized by Application after ContentDisplayManager is ready
     }
 
     /**
@@ -55,6 +55,9 @@ export default class SceneManager {
         }
 
         this.isTransitioning = true;
+
+        // Show scene info
+        this.showSceneInfo(sceneName);
 
         // Transition out current scene
         if (this.currentScene) {
@@ -101,12 +104,9 @@ export default class SceneManager {
             this.app.achievementSystem.trackSceneVisit(sceneName);
         }
 
-        // Get scene data (title + description)
-        const sceneData = this.getSceneData(sceneName);
-
-        // Load content for this scene (including scene intro)
+        // Load content for this scene (履歷內容)
         if (this.app.contentDisplayManager) {
-            this.app.contentDisplayManager.loadSceneContent(sceneName, sceneData);
+            this.app.contentDisplayManager.loadSceneContent(sceneName);
         }
 
         // Transition in
@@ -153,6 +153,7 @@ export default class SceneManager {
             ease: 'power2.out',
             onComplete: () => {
                 this.isTransitioning = false;
+                this.hideSceneInfo();
             }
         });
     }
