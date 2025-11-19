@@ -362,33 +362,17 @@ html, body {
     display: none;
 }
 
-/* --- SCENE INFO --- */
+/* --- SCENE INFO (DEPRECATED - Now integrated into content-display) --- */
 #scene-info {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-#scene-info.show {
-    opacity: 1;
+    display: none !important;
 }
 
 #scene-title {
-    font-size: 3rem;
-    color: var(--neon-pink);
-    text-shadow: 0 0 20px var(--neon-pink);
-    margin-bottom: 1rem;
-    text-transform: uppercase;
+    display: none !important;
 }
 
 #scene-description {
-    font-size: 1.2rem;
-    color: var(--neon-blue);
+    display: none !important;
 }
 
 /* --- BLACK SCREEN TRANSITION (Cinematic Slide Effect) --- */
@@ -608,6 +592,36 @@ html, body {
         0 0 5px rgba(255, 0, 0, 0.8),
         0 0 10px rgba(255, 0, 0, 0.4);
     white-space: nowrap;
+}
+
+/* Disabled button state */
+.nuclear-button.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.nuclear-button.disabled:hover {
+    transform: none;
+}
+
+.nuclear-button.disabled:active {
+    transform: none;
+}
+
+.nuclear-button.disabled .button-top {
+    animation: none;
+    background: radial-gradient(circle at 30% 30%, #666666, #444444);
+    box-shadow:
+        0 5px 15px rgba(100, 100, 100, 0.3),
+        inset 0 -3px 8px rgba(0, 0, 0, 0.4),
+        inset 0 3px 8px rgba(150, 150, 150, 0.2);
+}
+
+.nuclear-button.disabled .button-label {
+    color: #666666;
+    text-shadow:
+        0 0 5px rgba(100, 100, 100, 0.5),
+        0 0 10px rgba(100, 100, 100, 0.2);
 }
 
 /* --- PERFORMANCE STATS --- */

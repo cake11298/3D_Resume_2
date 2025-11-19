@@ -19,6 +19,7 @@ export default class ContentDisplayManager {
         this.currentSegments = [];
         this.currentSegmentIndex = -1;
         this.isTransitioning = false;
+        this.isPlayingIntro = false; // Track if intro is being played
 
         // Button interaction cooldown
         this.buttonCooldown = false;
@@ -43,10 +44,12 @@ export default class ContentDisplayManager {
     /**
      * Load content for a specific scene
      * @param {string} sceneName - Name of the scene
+     * @param {Object} sceneData - Scene intro data (title + description)
      */
-    loadSceneContent(sceneName) {
+    loadSceneContent(sceneName, sceneData) {
         this.currentScene = sceneName;
         this.currentSegmentIndex = -1;
+        this.isPlayingIntro = true; // Mark as playing intro
 
         // Get content for this scene
         const content = this.getContentForScene(sceneName);
@@ -56,26 +59,29 @@ export default class ContentDisplayManager {
             return;
         }
 
-        // Prepare segments
-        this.currentSegments = this.prepareSegments(content);
+        // Prepare segments (including intro as first segment)
+        this.currentSegments = this.prepareSegments(content, sceneData);
 
-        // Hide button initially
+        // Show button immediately (but will be disabled during intro)
         if (this.nuclearButtonContainer) {
-            this.nuclearButtonContainer.classList.remove('show');
+            this.nuclearButtonContainer.classList.add('show');
+            this.nuclearButton.classList.add('disabled');
         }
 
-        // Wait for scene transition AND scene info to complete, then show first segment
-        // SceneManager shows scene info, then hides it after 2 seconds in hideSceneInfo()
-        // We need to wait at least 2.5 seconds to ensure scene info is fully hidden
-        setTimeout(() => {
-            if (this.currentSegments.length > 0) {
-                this.showSegment(0);
-                // Show button when content is ready
-                if (this.nuclearButtonContainer) {
-                    this.nuclearButtonContainer.classList.add('show');
+        // Show first segment (scene intro) immediately
+        if (this.currentSegments.length > 0) {
+            this.showSegment(0);
+
+            // Enable button after intro is done (2 seconds like original scene-info)
+            setTimeout(() => {
+                this.isPlayingIntro = false;
+                if (this.nuclearButton) {
+                    this.nuclearButton.classList.remove('disabled');
                 }
-            }
-        }, 2800); // Wait 2.8 seconds to ensure scene info is completely hidden
+                // Update hint to show button is now active
+                this.updateHint();
+            }, 2000);
+        }
     }
 
     /**
@@ -101,10 +107,20 @@ export default class ContentDisplayManager {
     /**
      * Prepare content segments from scene data
      * @param {Object} content - Scene content object
+     * @param {Object} sceneData - Scene intro data (title + description)
      * @returns {Array} Array of segment objects
      */
-    prepareSegments(content) {
+    prepareSegments(content, sceneData) {
         const segments = [];
+
+        // Add scene intro as first segment
+        if (sceneData) {
+            segments.push({
+                title: sceneData.title,
+                text: sceneData.description,
+                isIntro: true
+            });
+        }
 
         // Handle different content structures for each scene
         if (this.currentScene === 'home') {
@@ -362,12 +378,16 @@ export default class ContentDisplayManager {
         if (this.currentSegments.length > 1) {
             this.hintElement.classList.add('show');
 
-            // Update hint text based on position
+            // Update hint text based on position and state
             const hintText = this.hintElement.querySelector('p');
             if (hintText) {
                 const current = this.currentSegmentIndex + 1;
                 const total = this.currentSegments.length;
-                hintText.textContent = `按紅色按鈕查看下一段 (${current}/${total}) 🔴`;
+                if (this.isPlayingIntro) {
+                    hintText.textContent = `請稍候... (${current}/${total})`;
+                } else {
+                    hintText.textContent = `按紅色按鈕查看下一段 (${current}/${total}) 🔴`;
+                }
             }
         } else {
             this.hintElement.classList.remove('show');
@@ -406,7 +426,11 @@ export default class ContentDisplayManager {
      * Handle nuclear button press - cycles through segments
      */
     onButtonPress() {
-        if (this.buttonCooldown || this.isTransitioning) return;
+        // Ignore button press if playing intro, in cooldown, or transitioning
+        if (this.isPlayingIntro || this.buttonCooldown || this.isTransitioning) {
+            console.log('🔴 Button press ignored - intro playing or cooldown');
+            return;
+        }
         if (this.currentSegments.length === 0) return;
 
         // Trigger next segment
