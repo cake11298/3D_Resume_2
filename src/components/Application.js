@@ -80,6 +80,9 @@ export default class Application {
         // Handle window resize
         window.addEventListener('resize', this.onWindowResize.bind(this));
 
+        // Initialize home scene (after all managers are ready)
+        this.sceneManager.switchScene('home');
+
         // Start animation loop
         this.start();
 

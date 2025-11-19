@@ -19,7 +19,6 @@ export default class ContentDisplayManager {
         this.currentSegments = [];
         this.currentSegmentIndex = -1;
         this.isTransitioning = false;
-        this.isPlayingIntro = false; // Track if intro is being played
         this.showingContent = false; // Track if content is currently shown
 
         // Button interaction cooldown
@@ -45,12 +44,10 @@ export default class ContentDisplayManager {
     /**
      * Load content for a specific scene
      * @param {string} sceneName - Name of the scene
-     * @param {Object} sceneData - Scene intro data (title + description)
      */
-    loadSceneContent(sceneName, sceneData) {
+    loadSceneContent(sceneName) {
         this.currentScene = sceneName;
         this.currentSegmentIndex = -1;
-        this.isPlayingIntro = true;
         this.showingContent = false;
 
         // Get content for this scene
@@ -61,35 +58,21 @@ export default class ContentDisplayManager {
             return;
         }
 
-        // Prepare segments (NOT including intro - intro is separate)
+        // Prepare segments
         this.currentSegments = this.prepareSegments(content);
 
-        // Show button immediately (but will be disabled during intro)
+        // Show button immediately (always enabled)
         if (this.nuclearButtonContainer) {
             this.nuclearButtonContainer.classList.add('show');
-            this.nuclearButton.classList.add('disabled');
         }
 
-        // Show scene intro first
-        if (sceneData) {
-            this.showIntro(sceneData);
-
-            // After 2 seconds, hide intro and show first content segment
-            setTimeout(() => {
-                this.fadeOut(() => {
-                    this.isPlayingIntro = false;
-                    if (this.nuclearButton) {
-                        this.nuclearButton.classList.remove('disabled');
-                    }
-
-                    // Show first content segment (persistent)
-                    if (this.currentSegments.length > 0) {
-                        this.showSegment(0);
-                        this.showingContent = true;
-                    }
-                });
-            }, 2000);
-        }
+        // Wait for scene info to finish (2.5s), then show first content segment
+        setTimeout(() => {
+            if (this.currentSegments.length > 0) {
+                this.showSegment(0);
+                this.showingContent = true;
+            }
+        }, 2500);
     }
 
     /**
@@ -110,30 +93,6 @@ export default class ContentDisplayManager {
         };
 
         return contentMap[sceneName] || null;
-    }
-
-    /**
-     * Show scene intro (separate from content segments)
-     * @param {Object} sceneData - Scene intro data (title + description)
-     */
-    showIntro(sceneData) {
-        const titleH1 = this.titleElement.querySelector('h1');
-        const textP = this.textElement.querySelector('p');
-
-        if (titleH1) titleH1.textContent = sceneData.title || '';
-        if (textP) textP.textContent = sceneData.description || '';
-
-        // Show title
-        this.titleElement.style.display = 'block';
-
-        // Fade in intro
-        this.titleElement.classList.remove('fade-out');
-        this.textElement.classList.remove('fade-out');
-        this.titleElement.classList.add('show');
-        this.textElement.classList.add('show');
-
-        // Hide hint during intro
-        this.hintElement.classList.remove('show');
     }
 
     /**
@@ -400,16 +359,12 @@ export default class ContentDisplayManager {
         if (this.currentSegments.length > 1) {
             this.hintElement.classList.add('show');
 
-            // Update hint text based on position and state
+            // Update hint text based on position
             const hintText = this.hintElement.querySelector('p');
             if (hintText) {
                 const current = this.currentSegmentIndex + 1;
                 const total = this.currentSegments.length;
-                if (this.isPlayingIntro) {
-                    hintText.textContent = `請稍候... (${current}/${total})`;
-                } else {
-                    hintText.textContent = `按紅色按鈕查看下一段 (${current}/${total}) 🔴`;
-                }
+                hintText.textContent = `按紅色按鈕查看下一段 (${current}/${total}) 🔴`;
             }
         } else {
             this.hintElement.classList.remove('show');
@@ -467,9 +422,9 @@ export default class ContentDisplayManager {
      * Handle nuclear button press - cycles through segments
      */
     onButtonPress() {
-        // Ignore button press if playing intro, in cooldown, or transitioning
-        if (this.isPlayingIntro || this.buttonCooldown || this.isTransitioning) {
-            console.log('🔴 Button press ignored - intro playing or cooldown');
+        // Ignore button press if in cooldown or transitioning
+        if (this.buttonCooldown || this.isTransitioning) {
+            console.log('🔴 Button press ignored - cooldown or transitioning');
             return;
         }
         if (this.currentSegments.length === 0) return;
