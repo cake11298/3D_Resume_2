@@ -155,6 +155,12 @@ export default class ContentDisplayManager {
                 title: content.domains.title,
                 text: content.domains.items.join('\n\n')
             });
+            if (content.learning) {
+                segments.push({
+                    title: content.learning.title,
+                    text: content.learning.items.join('\n\n')
+                });
+            }
             segments.push({
                 title: content.other.title,
                 text: content.other.items.join('\n\n')
@@ -165,13 +171,37 @@ export default class ContentDisplayManager {
                 title: content.subtitle,
                 text: '互動的專案作品集'
             });
-            content.items.forEach(project => {
-                const tags = project.tags.join(' | ');
+
+            // Featured projects
+            if (content.featured && content.featured.items) {
                 segments.push({
-                    title: `${project.icon} ${project.name}`,
-                    text: `${project.type}\n\n${project.description}\n\n${tags}`
+                    title: content.featured.title,
+                    text: '重點專案展示'
                 });
-            });
+                content.featured.items.forEach(project => {
+                    const tags = project.tags.join(' | ');
+                    const achievements = project.achievements ? '\n\n' + project.achievements.join('\n') : '';
+                    segments.push({
+                        title: `${project.icon} ${project.name}`,
+                        text: `${project.type}\n\n${project.description}\n\n${tags}${achievements}`
+                    });
+                });
+            }
+
+            // Other projects
+            if (content.others && content.others.items) {
+                segments.push({
+                    title: content.others.title,
+                    text: '其他作品'
+                });
+                content.others.items.forEach(project => {
+                    const tags = project.tags.join(' | ');
+                    segments.push({
+                        title: `${project.icon} ${project.name}`,
+                        text: `${project.type}\n\n${project.description}\n\n${tags}`
+                    });
+                });
+            }
         }
         else if (this.currentScene === 'timeline') {
             segments.push({
@@ -179,10 +209,13 @@ export default class ContentDisplayManager {
                 text: '我的工作經歷時間軸'
             });
             content.items.forEach(exp => {
-                const details = exp.details.length > 0 ? '\n\n• ' + exp.details.join('\n• ') : '';
+                const location = exp.location ? ` | ${exp.location}` : '';
+                const details = exp.details && exp.details.length > 0 ? '\n\n• ' + exp.details.join('\n• ') : '';
+                const achievements = exp.achievements ? `\n\n成果：${exp.achievements}` : '';
+                const learning = exp.learning ? `\n\n學習：${exp.learning}` : '';
                 segments.push({
                     title: `${exp.icon} ${exp.company}`,
-                    text: `${exp.role}\n${exp.period}\n\n${exp.description}${details}`
+                    text: `${exp.role}\n${exp.period}${location}\n\n${exp.description}${details}${achievements}${learning}`
                 });
             });
         }
@@ -192,10 +225,14 @@ export default class ContentDisplayManager {
                 text: '教育背景與學習歷程'
             });
             content.items.forEach(edu => {
+                const schoolName = edu.schoolCN ? `${edu.school}\n${edu.schoolCN}` : edu.school;
+                const degreeName = edu.degreeCN ? `${edu.degree}\n${edu.degreeCN}` : edu.degree;
+                const gpa = edu.gpa ? `\nGPA: ${edu.gpa}` : '';
                 const courses = edu.courses.join(' | ');
+                const highlights = edu.highlights ? '\n\n亮點：\n• ' + edu.highlights.join('\n• ') : '';
                 segments.push({
-                    title: `${edu.icon} ${edu.school}`,
-                    text: `${edu.degree}\n${edu.period}\n\n${edu.description}\n\n${courses}`
+                    title: `${edu.icon} ${schoolName}`,
+                    text: `${degreeName}${gpa}\n${edu.period}\n\n${edu.description}${highlights}\n\n${courses}`
                 });
             });
         }
